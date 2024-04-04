@@ -1,0 +1,47 @@
+version: '3.1'
+services:
+  # Первый сервис mariadb
+  #db:
+  #  image: mariadb:10.6
+  #  container_name: yakit-maria-db
+  #  restart: always
+#   tty: true
+#   entrypoint: ["sh","/home/hello.sh"]
+         # MYSQL_ROOT_PASSWORD: parol123
+     # MARIADB_USER: example-user
+    
+     # MARIADB_ROOT_HOST: localhost 
+     # mysql@locahost
+    # экспортируем собранный дамп sakila-schema.sql и sakila-data.sql в sakila.sql  в директорию docker-entrypoint-initdb.d где скрипт /usr/local/bin/docker-entrypoint.sh контейнера экспортирует данную бд в СУБД. Скрипт эксп
+  # Третий сервис php apache. Перемещаем наш созданный Dockerfile на шаге 1 в созданную в корне проекта директорию
+  phpapache:
+    build: ./website1/.
+    ports:
+      - 8082:80
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 8084:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+    volumes:
+      - wordpress:/var/www/html
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+
+volumes:
+  wordpress:
+  db:
